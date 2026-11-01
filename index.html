@@ -1,0 +1,1864 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0b1120">
+    <title>iMaths Studio 2026 - App Soạn & Luyện Đề Toán THPT</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #0b1120;
+            color: #f8fafc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow: hidden;
+        }
+
+        #im-exam-studio-app {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 8px 10px;
+            background: #0b1120;
+        }
+
+        /* Thanh Header App */
+        .imes-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #162033, #1e1b4b);
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .imes-header-title {
+            font-size: 14.5px;
+            font-weight: 900;
+            color: #fde047;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .imes-header-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .imes-action-btn {
+            border: none;
+            border-radius: 7px;
+            padding: 7px 10px;
+            font-size: 11.5px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.15s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+        .imes-action-btn:active {
+            transform: scale(0.97);
+        }
+        .imes-btn-primary { background: linear-gradient(135deg, #0284c7, #2563eb); color: #fff; }
+        .imes-btn-gold { background: linear-gradient(135deg, #ca8a04, #eab308); color: #020617; }
+        .imes-btn-green { background: linear-gradient(135deg, #059669, #10b981); color: #fff; }
+        .imes-btn-word { background: linear-gradient(135deg, #1d4ed8, #1e40af); color: #fff; border: 1px solid #60a5fa; }
+        .imes-btn-latex { background: linear-gradient(135deg, #ea580c, #d97706); color: #fff; border: 1px solid #fdba74; }
+        .imes-btn-quiz { background: linear-gradient(135deg, #db2777, #e11d48); color: #fff; border: 1px solid #f472b6; }
+
+        /* Thanh 3 Tab trên Điện thoại: Ma trận | Đề thi A4 | Làm bài trực tiếp */
+        .imes-mobile-switch-bar {
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+        .imes-mob-tab {
+            background: #1e293b;
+            color: #94a3b8;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 8px 4px;
+            font-size: 11.5px;
+            font-weight: 800;
+            text-align: center;
+            cursor: pointer;
+        }
+        .imes-mob-tab.active {
+            background: linear-gradient(135deg, #0284c7, #2563eb);
+            color: #ffffff;
+            border-color: #7dd3fc;
+        }
+
+        /* Bố cục 2 cột trên PC & 1 cột chuyển Tab trên Điện thoại */
+        .imes-grid-2col {
+            display: grid;
+            grid-template-columns: 650px 1fr;
+            gap: 10px;
+            flex: 1;
+            min-height: 0;
+            height: 100%;
+        }
+        .imes-panel {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            max-height: 100%;
+            overflow-y: auto;
+        }
+        .imes-panel-center {
+            padding: 8px;
+            overflow: hidden;
+        }
+        .imes-panel-title {
+            font-size: 12.5px;
+            font-weight: 800;
+            color: #38bdf8;
+            text-transform: uppercase;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .imes-mode-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            background: #0f172a;
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+        .imes-mode-tab-btn {
+            background: transparent;
+            color: #94a3b8;
+            border: none;
+            border-radius: 6px;
+            padding: 7px 6px;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .imes-mode-tab-btn.active {
+            background: linear-gradient(135deg, #0284c7, #2563eb);
+            color: #ffffff;
+        }
+
+        .imes-field { margin-bottom: 7px; flex-shrink: 0; }
+        .imes-field label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: #cbd5e1;
+            margin-bottom: 3px;
+        }
+        .imes-input, .imes-select {
+            width: 100%;
+            background: #0f172a;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            padding: 6px 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Bảng Ma Trận Đề Thi */
+        .imes-matrix-container {
+            background: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+        .imes-matrix-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 6px;
+        }
+        .imes-matrix-title {
+            font-size: 11.5px;
+            font-weight: 900;
+            color: #fde047;
+        }
+        .imes-matrix-scroll {
+            width: 100%;
+            overflow-x: auto;
+            max-height: 380px;
+            overflow-y: auto;
+            border: 1px solid #334155;
+            border-radius: 6px;
+        }
+        table.imes-matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10.5px;
+            color: #e2e8f0;
+            background: #090f1d;
+        }
+        table.imes-matrix-table th, table.imes-matrix-table td {
+            border: 1px solid #334155;
+            padding: 4px;
+            vertical-align: middle;
+        }
+        table.imes-matrix-table thead th {
+            background: #1e293b;
+            color: #7dd3fc;
+            font-weight: 800;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        .mat-th-de { color: #4ade80 !important; }
+        .mat-th-tb { color: #fde047 !important; }
+        .mat-th-kho { color: #fb7185 !important; }
+        td.mat-col-chapter {
+            background: #0f172a;
+            font-weight: 800;
+            color: #fde047;
+            min-width: 125px;
+        }
+        td.mat-col-chapter.is-1011-chapter {
+            background: linear-gradient(135deg, #1e1b4b, #311042);
+            color: #f472b6;
+            border-left: 3px solid #ec4899;
+        }
+        td.mat-col-lesson {
+            background: #131c31;
+            color: #f1f5f9;
+            min-width: 155px;
+        }
+        td.mat-col-num { text-align: center; width: 28px; padding: 2px !important; }
+        input.mat-num-inp {
+            width: 26px;
+            height: 21px;
+            background: #020617;
+            color: #fff;
+            border: 1px solid #475569;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 10.5px;
+            font-weight: 800;
+            padding: 0;
+        }
+        input.mat-num-inp.has-val {
+            background: #064e3b;
+            border-color: #10b981;
+            color: #a7f3d0;
+        }
+        table.imes-matrix-table tfoot td {
+            background: #1e293b;
+            font-weight: 900;
+            color: #fde047;
+            text-align: center;
+            position: sticky;
+            bottom: 0;
+        }
+
+        .imes-part-mini-btn {
+            background: #1e293b;
+            color: #4ade80;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 10.5px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        /* Khung Xem Trước Đề Thi A4 */
+        .imes-preview-viewport {
+            background: #334155;
+            border-radius: 8px;
+            padding: 12px;
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        #imes-paper-scale-wrap {
+            width: 794px;
+            display: flex;
+            justify-content: center;
+            transform-origin: top center;
+        }
+        #imes-a4-paper {
+            background: #ffffff;
+            color: #000000;
+            width: 794px !important;
+            min-width: 794px !important;
+            max-width: 794px !important;
+            min-height: 1123px;
+            padding: 42px 48px 46px 56px !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.55);
+            font-family: "Times New Roman", Times, Georgia, serif;
+            font-size: 12.5pt !important;
+            line-height: 1.48;
+            text-align: justify;
+        }
+
+        /* Nút "🔄 Đổi câu" đặt phía trước "Câu 1..." */
+        .exam-question-block {
+            margin-bottom: 9px;
+            width: 100%;
+            font-size: 12.5pt !important;
+            page-break-inside: avoid;
+            position: relative;
+            border-radius: 4px;
+        }
+        .imes-q-swap-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            margin-right: 6px;
+            padding: 1px 7px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+            font-size: 10px !important;
+            font-weight: 800 !important;
+            color: #0284c7 !important;
+            background: #e0f2fe !important;
+            border: 1px solid #38bdf8 !important;
+            border-radius: 99px !important;
+            cursor: pointer;
+            vertical-align: baseline;
+        }
+        .imes-q-swap-btn:hover {
+            background: #0284c7 !important;
+            color: #ffffff !important;
+        }
+
+        /* Định dạng Công thức Toán chuẩn trên A4 & Chế độ làm bài */
+        .em-math { font-family: "Times New Roman", Times, serif; font-style: italic; }
+        .em-rom { font-style: normal; }
+        .em-frac {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            text-align: center;
+            padding: 0 2px;
+            font-size: 92%;
+            line-height: 1.1;
+        }
+        .em-frac-num { border-bottom: 1px solid currentColor; padding: 0 2px 1px 2px; }
+        .em-frac-den { padding: 1px 2px 0 2px; }
+        .em-sqrt { display: inline-flex; align-items: baseline; }
+        .em-sqrt-sign { font-size: 112%; font-style: normal; margin-right: 1px; }
+        .em-sqrt-body { border-top: 1px solid currentColor; padding-top: 1px; }
+        .em-vec { position: relative; display: inline-block; padding-top: 2px; }
+        .em-vec::before {
+            content: "→";
+            position: absolute;
+            top: -0.55em;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 75%;
+            font-style: normal;
+        }
+        .em-sys {
+            display: inline-flex;
+            align-items: center;
+            vertical-align: middle;
+        }
+        .em-sys::before {
+            content: "{";
+            font-size: 185%;
+            font-style: normal;
+            margin-right: 3px;
+            line-height: 1;
+        }
+        .em-sys-rows {
+            display: inline-flex;
+            flex-direction: column;
+            text-align: left;
+            line-height: 1.3;
+        }
+        .em-int {
+            display: inline-flex;
+            align-items: center;
+            vertical-align: middle;
+        }
+        .em-int::before {
+            content: "∫";
+            font-size: 145%;
+            font-style: normal;
+            margin-right: 2px;
+        }
+        .em-int-lims {
+            display: inline-flex;
+            flex-direction: column;
+            font-size: 72%;
+            line-height: 1;
+            margin-right: 3px;
+        }
+
+        .exam-header-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        .exam-header-table td { vertical-align: top; text-align: center; color: #000; font-size: 12pt; line-height: 1.35; }
+        .exam-code-box { display: inline-block; border: 1.5px solid #000; padding: 1px 12px; font-weight: bold; margin-top: 3px; }
+        .exam-section-heading { font-weight: bold; font-size: 12.5pt !important; margin: 10px 0 6px 0; }
+        .exam-q-stem { margin-bottom: 3.5px; text-align: justify; }
+        .exam-split-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        .exam-split-table td.exam-split-left { vertical-align: top; padding-right: 10px; }
+        .exam-split-table td.exam-split-right { width: 175px; vertical-align: top; text-align: center; }
+        .exam-mc-table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-top: 2px; }
+        .exam-mc-table td { vertical-align: baseline; padding: 2px 4px 2px 0; color: #000; }
+        .exam-tf-list { margin: 3px 0 0 14px; display: flex; flex-direction: column; gap: 3px; }
+        .exam-data-table, .exam-answer-table { width: 100%; border-collapse: collapse; margin: 6px 0; font-size: 11.5pt; }
+        .exam-data-table th, .exam-data-table td, .exam-answer-table th, .exam-answer-table td {
+            border: 1px solid #000; padding: 4px 5px; text-align: center; color: #000;
+        }
+        .exam-svg-wrap { width: 100%; text-align: center; margin: 5px auto; }
+
+        /* ===================================================================
+           CHẾ ĐỘ HỌC SINH LÀM BÀI & CHẤM ĐIỂM TRỰC TIẾP TRÊN ĐIỆN THOẠI
+           =================================================================== */
+        #imes-student-quiz-box {
+            display: none;
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 8px;
+            background: #0f172a;
+            border-radius: 8px;
+        }
+        .quiz-score-banner {
+            background: linear-gradient(135deg, #064e3b, #0f172a);
+            border: 1.5px solid #10b981;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+            text-align: center;
+            display: none;
+        }
+        .quiz-card {
+            background: #ffffff;
+            color: #0f172a;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            font-family: "Times New Roman", Times, serif;
+            font-size: 12.5pt;
+            line-height: 1.45;
+            border: 2px solid #cbd5e1;
+        }
+        .quiz-mc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 7px;
+            margin-top: 8px;
+        }
+        .quiz-mc-opt {
+            background: #f1f5f9;
+            border: 1.5px solid #94a3b8;
+            border-radius: 8px;
+            padding: 8px 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12pt;
+        }
+        .quiz-mc-opt.selected {
+            background: #dbeafe;
+            border-color: #2563eb;
+            font-weight: bold;
+        }
+        .quiz-mc-opt.correct-ans {
+            background: #dcfce7 !important;
+            border-color: #16a34a !important;
+        }
+        .quiz-mc-opt.wrong-ans {
+            background: #fee2e2 !important;
+            border-color: #dc2626 !important;
+        }
+        .quiz-tf-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            border-bottom: 1px dashed #cbd5e1;
+        }
+        .quiz-tf-btns {
+            display: flex;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+        .quiz-tf-btn {
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid #64748b;
+            background: #f8fafc;
+            font-family: sans-serif;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .quiz-tf-btn.active-true { background: #16a34a; color: #fff; border-color: #15803d; }
+        .quiz-tf-btn.active-false { background: #dc2626; color: #fff; border-color: #b91c1c; }
+
+        @media (max-width: 920px) {
+            .imes-header-title { font-size: 13px; width: 100%; justify-content: space-between; }
+            .imes-header-actions {
+                width: 100%;
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 4px;
+            }
+            .imes-mobile-switch-bar { display: grid; }
+            .imes-grid-2col { grid-template-columns: 1fr; }
+            .imes-panel.imes-mob-hidden { display: none !important; }
+            .quiz-mc-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="im-exam-studio-app">
+    <!-- THANH CÔNG CỤ TRÊN CÙNG -->
+    <div class="imes-header-bar">
+        <div class="imes-header-title">
+            <span>🏛️ IMATHS STUDIO 2026 (APP SOẠN & LUYỆN ĐỀ)</span>
+        </div>
+        <div class="imes-header-actions">
+            <button type="button" class="imes-action-btn imes-btn-primary" onclick="window.IMES_Engine.generateExam(true)">
+                ⚡ TẠO ĐỀ MỚI
+            </button>
+            <button type="button" class="imes-action-btn imes-btn-gold" onclick="window.IMES_Engine.shuffleCurrentExam(true)">
+                🔀 ĐẢO ĐỀ
+            </button>
+            <button type="button" class="imes-action-btn imes-btn-quiz" onclick="window.IMES_Engine.toggleStudentQuizView()">
+                ✍️ LÀM BÀI TRÊN ĐT
+            </button>
+            <button type="button" id="imes-btn-export-pdf" class="imes-action-btn imes-btn-green" onclick="window.IMES_Engine.exportToPDF()">
+                🖨️ TẢI PDF
+            </button>
+            <button type="button" id="imes-btn-export-word" class="imes-action-btn imes-btn-word" onclick="window.IMES_Engine.exportToWord()">
+                📘 TẢI WORD
+            </button>
+            <button type="button" id="imes-btn-export-latex" class="imes-action-btn imes-btn-latex" onclick="window.IMES_Engine.exportToLaTeX()">
+                📜 TẢI LATEX
+            </button>
+        </div>
+    </div>
+
+    <!-- THANH CHUYỂN 3 CHẾ ĐỘ TRÊN ĐIỆN THOẠI -->
+    <div class="imes-mobile-switch-bar">
+        <div id="imes-mob-btn-cfg" class="imes-mob-tab" onclick="window.IMES_Engine.switchMobilePanel('cfg')">
+            ⚙️ Ma trận đề
+        </div>
+        <div id="imes-mob-btn-prv" class="imes-mob-tab active" onclick="window.IMES_Engine.switchMobilePanel('prv')">
+            📄 Xem Đề A4
+        </div>
+        <div id="imes-mob-btn-quiz" class="imes-mob-tab" onclick="window.IMES_Engine.switchMobilePanel('quiz')">
+            ✍️ Làm bài & Chấm
+        </div>
+    </div>
+
+    <div class="imes-grid-2col">
+        <!-- CỘT 1: BẢNG MA TRẬN ĐỀ & CÀI ĐẶT (LÕI 1A) -->
+        <div id="imes-col-config" class="imes-panel imes-mob-hidden">
+            <div class="imes-panel-title">
+                <span>⚙️ BẢNG ĐIỀU KHIỂN & MA TRẬN ĐỀ 2026</span>
+            </div>
+
+            <div class="imes-mode-tabs">
+                <button type="button" id="imes-tab-exam" class="imes-mode-tab-btn active" onclick="window.IMES_Engine.switchMode('exam')">
+                    📝 Tạo đề thi (Theo Ma Trận)
+                </button>
+                <button type="button" id="imes-tab-topic" class="imes-mode-tab-btn" onclick="window.IMES_Engine.switchMode('topic')">
+                    📚 Tạo chuyên đề
+                </button>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                <div class="imes-field">
+                    <label>Cơ quan / Trường học:</label>
+                    <input type="text" id="imes-org-name" class="imes-input" value="SỞ GIÁO DỤC VÀ ĐÀO TẠO" oninput="window.IMES_Engine.renderPaper()">
+                </div>
+                <div class="imes-field">
+                    <label id="imes-title-label">Tiêu đề trên tờ đề:</label>
+                    <input type="text" id="imes-exam-title" class="imes-input" value="KỲ THI TỐT NGHIỆP THPT NĂM 2026" oninput="window.IMES_Engine.renderPaper()">
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr 78px 78px; gap:6px;">
+                <div class="imes-field">
+                    <label>1. Chọn Khối Lớp:</label>
+                    <select id="imes-grade-select" class="imes-select" onchange="window.IMES_Engine.onGradeChange()">
+                        <option value="12" selected>📘 Toán Khối 12</option>
+                        <option value="11">📗 Toán Khối 11</option>
+                        <option value="10">📙 Toán Khối 10</option>
+                    </select>
+                </div>
+                <div class="imes-field" id="imes-term-field-wrap">
+                    <label>2. Tên Kỳ Thi:</label>
+                    <select id="imes-term-select" class="imes-select" onchange="window.IMES_Engine.onTermChange()">
+                        <option value="gk1">📝 Thi giữa kỳ 1</option>
+                        <option value="hk1">📘 Thi học kỳ 1</option>
+                        <option value="gk2">📝 Thi giữa kỳ 2</option>
+                        <option value="hk2">📗 Thi học kỳ 2</option>
+                        <option value="thpt" id="imes-opt-thpt" selected>🎓 Thi đại học (THPT)</option>
+                    </select>
+                </div>
+                <div class="imes-field">
+                    <label>Phút:</label>
+                    <input type="number" id="imes-duration" class="imes-input" value="90" min="15" max="180" oninput="window.IMES_Engine.renderPaper()">
+                </div>
+                <div class="imes-field" id="imes-code-field-wrap">
+                    <label>Mã đề:</label>
+                    <input type="text" id="imes-exam-code" class="imes-input" value="0101" oninput="window.IMES_Engine.renderPaper()">
+                </div>
+            </div>
+
+            <!-- BẢNG MA TRẬN ĐỀ THI -->
+            <div id="imes-matrix-section" class="imes-matrix-container">
+                <div class="imes-matrix-header-bar">
+                    <div class="imes-matrix-title">
+                        <span>📊 MA TRẬN ĐỀ THI (KẾT NỐI TRI THỨC 2026)</span>
+                        <span id="imes-matrix-term-badge" style="color:#38bdf8;font-weight:800;"></span>
+                    </div>
+                    <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                        <button type="button" class="imes-part-mini-btn" onclick="window.IMES_Engine.applyStandardMatrixPreset()">
+                            ⚡ Ma trận chuẩn
+                        </button>
+                        <button type="button" class="imes-part-mini-btn" style="color:#f87171;" onclick="window.IMES_Engine.clearMatrixCounts()">
+                            🧹 Xóa về 0
+                        </button>
+                    </div>
+                </div>
+
+                <div class="imes-matrix-scroll">
+                    <table class="imes-matrix-table">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" style="min-width:125px;">Chủ đề<br><span style="font-size:9px;color:#94a3b8;">(Chương SGK & 10+11)</span></th>
+                                <th rowspan="2" style="min-width:155px;">Nội dung<br><span style="font-size:9px;color:#94a3b8;">(Bài học thành phần)</span></th>
+                                <th colspan="3">Trắc nghiệm</th>
+                                <th colspan="3">Đúng - Sai</th>
+                                <th colspan="3">Trả lời ngắn</th>
+                                <th colspan="3">Tự luận</th>
+                            </tr>
+                            <tr>
+                                <th class="mat-th-de">Dễ</th><th class="mat-th-tb">TB</th><th class="mat-th-kho">Khó</th>
+                                <th class="mat-th-de">Dễ</th><th class="mat-th-tb">TB</th><th class="mat-th-kho">Khó</th>
+                                <th class="mat-th-de">Dễ</th><th class="mat-th-tb">TB</th><th class="mat-th-kho">Khó</th>
+                                <th class="mat-th-de">Dễ</th><th class="mat-th-tb">TB</th><th class="mat-th-kho">Khó</th>
+                            </tr>
+                        </thead>
+                        <tbody id="imes-matrix-tbody"></tbody>
+                        <tfoot id="imes-matrix-tfoot"></tfoot>
+                    </table>
+                </div>
+                <div style="font-size:10.5px;color:#94a3b8;margin-top:5px;display:flex;justify-content:space-between;flex-wrap:wrap;">
+                    <span>💡 Tích chọn bài học và nhập số câu <b>Dễ - TB - Khó</b>.</span>
+                    <span id="imes-matrix-total-summary" style="color:#4ade80;font-weight:800;"></span>
+                </div>
+            </div>
+
+            <div class="imes-field">
+                <label>Chế độ hiển thị Bảng Đáp Án cuối đề:</label>
+                <select id="imes-ans-mode" class="imes-select" onchange="window.IMES_Engine.renderPaper()">
+                    <option value="show" selected>Kèm Bảng Đáp Án & Lời Giải cuối đề</option>
+                    <option value="hide">Ẩn Đáp Án (Để học sinh tự luyện đề)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- CỘT 2: XEM TRƯỚC TỜ ĐỀ A4 HOẶC LÀM BÀI TRỰC TIẾP TRÊN ĐIỆN THOẠI -->
+        <div id="imes-col-preview" class="imes-panel imes-panel-center">
+            <div class="imes-panel-title">
+                <span id="imes-right-panel-heading">📄 XEM TRƯỚC ĐỀ THI (BẤM "🔄 ĐỔI CÂU" TRƯỚC TỪNG CÂU ĐỂ ĐỔI)</span>
+                <span id="imes-stat-badge" style="font-size:11px; color:#fde047; font-weight:700;"></span>
+            </div>
+
+            <!-- KHUNG 1: XEM TỜ GIẤY A4 CHUẨN -->
+            <div class="imes-preview-viewport" id="imes-preview-scroll-box">
+                <div id="imes-paper-scale-wrap">
+                    <div id="imes-a4-paper"></div>
+                </div>
+            </div>
+
+            <!-- KHUNG 2: HỌC SINH LÀM BÀI & CHẤM ĐIỂM TRỰC TIẾP TRÊN ĐIỆN THOẠI -->
+            <div id="imes-student-quiz-box">
+                <div id="imes-quiz-score-banner" class="quiz-score-banner"></div>
+                <div id="imes-quiz-questions-container"></div>
+                <button type="button" class="imes-action-btn imes-btn-green" style="width:100%;padding:12px;font-size:14px;margin-top:8px;" onclick="window.IMES_Engine.gradeStudentQuiz()">
+                    🏆 NỘP BÀI & CHẤM ĐIỂM NGAY
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    // ===================================================================
+    // 1. LÕI ĐỊNH DẠNG CÔNG THỨC TOÁN & HÌNH VẼ VECTOR SVG (IMATHS_EXAM_FMT)
+    // ===================================================================
+    window.IMATHS_EXAM_FMT = {
+        m: function(html) { return '<span class="em-math">' + html + '</span>'; },
+        rom: function(txt) { return '<span class="em-rom">' + txt + '</span>'; },
+        frac: function(num, den) {
+            return '<span class="em-frac"><span class="em-frac-num">' + num + '</span><span class="em-frac-den">' + den + '</span></span>';
+        },
+        sqrt: function(rad, idx) {
+            const supIdx = idx ? '<sup>' + idx + '</sup>' : '';
+            return '<span class="em-sqrt">' + supIdx + '<span class="em-sqrt-sign">&radic;</span><span class="em-sqrt-body">' + rad + '</span></span>';
+        },
+        vec: function(txt) {
+            return '<span class="em-vec"><span class="em-vec-txt">' + txt + '</span></span>';
+        },
+        sys: function(row1, row2, row3) {
+            let rows = '<span>' + row1 + '</span><span>' + row2 + '</span>';
+            if (row3) rows += '<span>' + row3 + '</span>';
+            return '<span class="em-sys"><span class="em-sys-rows">' + rows + '</span></span>';
+        },
+        integral: function(sub, sup, expr) {
+            return '<span class="em-int"><span class="em-int-lims"><span>' + sup + '</span><span>' + sub + '</span></span><span>' + expr + '</span></span>';
+        }
+    };
+
+    window.IMATHS_EXAM_MODULES = { '10': {}, '11': {}, '12': {} };
+
+    window.registerExamStudioModule = function(grade, topicId, config) {
+        const gRaw = String(grade).trim();
+        if (gRaw === '10+11' || gRaw === '10-11' || (config && config.chapterId === 'g12_c1011')) {
+            config.chapterId = config.chapterId || 'g12_c1011';
+            config.is1011 = true;
+            window.IMATHS_EXAM_MODULES['12'][topicId] = config;
+        } else {
+            if (!window.IMATHS_EXAM_MODULES[gRaw]) window.IMATHS_EXAM_MODULES[gRaw] = {};
+            window.IMATHS_EXAM_MODULES[gRaw][topicId] = config;
+        }
+    };
+
+    // ===================================================================
+    // 2. CƠ SỞ DỮ LIỆU CHƯƠNG TRÌNH SGK KẾT NỐI TRI THỨC 2026 (10 - 11 - 12)
+    // ===================================================================
+    window.IMATHS_KNTT_CURRICULUM = {
+        '10': [
+            {
+                chapterId: 'g10_c1', chapterTitle: 'Chương I. Mệnh đề và tập hợp', terms: ['gk1', 'hk1'],
+                lessons: [
+                    { id: 'g10_c1_b1', name: 'Bài 1. Mệnh đề', keywords: ['mệnh đề', 'phủ định'] },
+                    { id: 'g10_c1_b2', name: 'Bài 2. Tập hợp và các phép toán', keywords: ['tập hợp', 'giao', 'hợp'] }
+                ]
+            },
+            {
+                chapterId: 'g10_c2', chapterTitle: 'Chương II. BPT và hệ BPT bậc nhất hai ẩn', terms: ['gk1', 'hk1'],
+                lessons: [
+                    { id: 'g10_c2_b3', name: 'Bài 3. Bất phương trình bậc nhất hai ẩn', keywords: ['bất phương trình'] },
+                    { id: 'g10_c2_b4', name: 'Bài 4. Hệ bất phương trình bậc nhất hai ẩn', keywords: ['hệ bất phương trình'] }
+                ]
+            },
+            {
+                chapterId: 'g10_c3', chapterTitle: 'Chương III. Hệ thức lượng trong tam giác', terms: ['gk1', 'hk1'],
+                lessons: [
+                    { id: 'g10_c3_b5', name: 'Bài 5. Giá trị lượng giác góc từ 0° đến 180°', keywords: ['giá trị lượng giác'] },
+                    { id: 'g10_c3_b6', name: 'Bài 6. Hệ thức lượng trong tam giác', keywords: ['định lí cosin', 'định lí sin'] }
+                ]
+            },
+            {
+                chapterId: 'g10_c6', chapterTitle: 'Chương VI. Hàm số, đồ thị và ứng dụng', terms: ['gk2', 'hk2'],
+                lessons: [
+                    { id: 'g10_c6_b15', name: 'Bài 15. Hàm số & Sự biến thiên', keywords: ['tập xác định'] },
+                    { id: 'g10_c6_b16', name: 'Bài 16. Hàm số bậc hai & Tam thức bậc hai', keywords: ['bậc hai', 'parabol'] }
+                ]
+            },
+            {
+                chapterId: 'g10_c7', chapterTitle: 'Chương VII. Phương pháp tọa độ trong mặt phẳng', terms: ['gk2', 'hk2'],
+                lessons: [
+                    { id: 'g10_c7_b19', name: 'Bài 19. Phương trình đường thẳng', keywords: ['đường thẳng'] },
+                    { id: 'g10_c7_b21', name: 'Bài 21. Đường tròn & Ba đường Conic', keywords: ['đường tròn', 'elip'] }
+                ]
+            }
+        ],
+        '11': [
+            {
+                chapterId: 'g11_c1', chapterTitle: 'Chương I. Hàm số lượng giác & PT lượng giác', terms: ['gk1', 'hk1'],
+                lessons: [
+                    { id: 'g11_c1_b1', name: 'Bài 1. Góc & Công thức lượng giác', keywords: ['công thức lượng giác'] },
+                    { id: 'g11_c1_b4', name: 'Bài 4. Phương trình lượng giác cơ bản', keywords: ['phương trình lượng giác'] }
+                ]
+            },
+            {
+                chapterId: 'g11_c2', chapterTitle: 'Chương II. Dãy số. Cấp số cộng & Cấp số nhân', terms: ['gk1', 'hk1'],
+                lessons: [
+                    { id: 'g11_c2_b6', name: 'Bài 6. Cấp số cộng', keywords: ['cấp số cộng', 'công sai'] },
+                    { id: 'g11_c2_b7', name: 'Bài 7. Cấp số nhân', keywords: ['cấp số nhân', 'công bội'] }
+                ]
+            },
+            {
+                chapterId: 'g11_c6', chapterTitle: 'Chương VI. Hàm số mũ và hàm số lôgarit', terms: ['gk2', 'hk2'],
+                lessons: [
+                    { id: 'g11_c6_b19', name: 'Bài 19. Lôgarit & Hàm số mũ - lôgarit', keywords: ['lôgarit', 'log'] },
+                    { id: 'g11_c6_b21', name: 'Bài 21. PT, BPT mũ và lôgarit', keywords: ['phương trình mũ'] }
+                ]
+            },
+            {
+                chapterId: 'g11_c7', chapterTitle: 'Chương VII. Quan hệ vuông góc trong không gian', terms: ['gk2', 'hk2'],
+                lessons: [
+                    { id: 'g11_c7_b26', name: 'Bài 26. Khoảng cách & Góc trong không gian', keywords: ['khoảng cách'] },
+                    { id: 'g11_c7_b27', name: 'Bài 27. Thể tích khối chóp, lăng trụ', keywords: ['thể tích'] }
+                ]
+            }
+        ],
+        '12': [
+            {
+                chapterId: 'g12_c1', chapterTitle: 'Chương I. Ứng dụng đạo hàm khảo sát hàm số', terms: ['gk1', 'hk1', 'thpt'],
+                lessons: [
+                    { id: 'g12_c1_b1', name: 'Bài 1. Tính đơn điệu và cực trị của hàm số', keywords: ['đồng biến', 'nghịch biến', 'cực trị'] },
+                    { id: 'g12_c1_b2', name: 'Bài 2. Giá trị lớn nhất và giá trị nhỏ nhất', keywords: ['lớn nhất', 'nhỏ nhất'] },
+                    { id: 'g12_c1_b3', name: 'Bài 3. Đường tiệm cận của đồ thị hàm số', keywords: ['tiệm cận'] },
+                    { id: 'g12_c1_b4', name: 'Bài 4. Khảo sát và vẽ đồ thị hàm số', keywords: ['đồ thị'] },
+                    { id: 'g12_c1_b5', name: 'Bài 5. Ứng dụng đạo hàm vào bài toán thực tiễn', keywords: ['lợi nhuận', 'chi phí'] }
+                ]
+            },
+            {
+                chapterId: 'g12_c2', chapterTitle: 'Chương II. Vectơ và hệ trục tọa độ Oxyz', terms: ['gk1', 'hk1', 'thpt'],
+                lessons: [
+                    { id: 'g12_c2_b7', name: 'Bài 7. Hệ trục tọa độ trong không gian Oxyz', keywords: ['hình chiếu', 'oxyz'] },
+                    { id: 'g12_c2_b8', name: 'Bài 8. Biểu thức tọa độ của các phép toán vectơ', keywords: ['tọa độ', 'vectơ'] }
+                ]
+            },
+            {
+                chapterId: 'g12_c3', chapterTitle: 'Chương III. Các số đặc trưng đo mức độ phân tán', terms: ['hk1', 'thpt'],
+                lessons: [
+                    { id: 'g12_c3_b9', name: 'Bài 9. Khoảng biến thiên và khoảng tứ phân vị', keywords: ['khoảng biến thiên', 'tứ phân vị'] },
+                    { id: 'g12_c3_b10', name: 'Bài 10. Phương sai và độ lệch chuẩn ghép nhóm', keywords: ['phương sai', 'độ lệch chuẩn'] }
+                ]
+            },
+            {
+                chapterId: 'g12_c4', chapterTitle: 'Chương IV. Nguyên hàm và tích phân', terms: ['gk2', 'hk2', 'thpt'],
+                lessons: [
+                    { id: 'g12_c4_b11', name: 'Bài 11. Nguyên hàm', keywords: ['nguyên hàm'] },
+                    { id: 'g12_c4_b12', name: 'Bài 12. Tích phân & Bài toán chuyển động', keywords: ['tích phân', 'vận tốc'] },
+                    { id: 'g12_c4_b13', name: 'Bài 13. Ứng dụng hình học của tích phân', keywords: ['diện tích', 'parabol'] }
+                ]
+            },
+            {
+                chapterId: 'g12_c5', chapterTitle: 'Chương V. Phương pháp tọa độ trong không gian', terms: ['gk2', 'hk2', 'thpt'],
+                lessons: [
+                    { id: 'g12_c5_b14', name: 'Bài 14. Phương trình mặt phẳng', keywords: ['mặt phẳng', 'pháp tuyến'] },
+                    { id: 'g12_c5_b15', name: 'Bài 15. Phương trình đường thẳng & Góc', keywords: ['đường thẳng', 'chỉ phương'] },
+                    { id: 'g12_c5_b17', name: 'Bài 17. Phương trình mặt cầu', keywords: ['mặt cầu', 'bán kính'] }
+                ]
+            },
+            {
+                chapterId: 'g12_c6', chapterTitle: 'Chương VI. Xác suất có điều kiện & Bayes', terms: ['hk2', 'thpt'],
+                lessons: [
+                    { id: 'g12_c6_b18', name: 'Bài 18. Xác suất có điều kiện', keywords: ['xác suất có điều kiện'] },
+                    { id: 'g12_c6_b19', name: 'Bài 19. Xác suất toàn phần và công thức Bayes', keywords: ['toàn phần', 'bayes'] }
+                ]
+            },
+            {
+                chapterId: 'g12_c1011', chapterTitle: '🔥 Chủ đề Lớp 10 + 11 (Tích hợp Thi Đại Học)', terms: ['thpt'],
+                lessons: [
+                    { id: 'g12_c1011_b1', name: '1. Dãy số, Cấp số cộng & Cấp số nhân (Lớp 11)', keywords: ['cấp số cộng', 'cấp số nhân'] },
+                    { id: 'g12_c1011_b2', name: '2. Hàm số mũ, Lôgarit & Phương trình, BPT (Lớp 11)', keywords: ['lôgarit', 'log'] },
+                    { id: 'g12_c1011_b3', name: '3. Hình không gian: Góc, Khoảng cách, Thể tích (Lớp 11)', keywords: ['khối chóp', 'khoảng cách'] },
+                    { id: 'g12_c1011_b4', name: '4. Đại số tổ hợp, Bài toán đếm & Xác suất (Lớp 10+11)', keywords: ['tổ hợp', 'chữ số'] }
+                ]
+            }
+        ]
+    };
+
+    function stripBracketLessonPrefix(str) {
+        if (!str) return '';
+        let s = String(str);
+        s = s.replace(/^\s*(\([0-9,\.]+\s*điểm\)\s*)?(\[[^\]]+\]\s*)+/i, '$1');
+        s = s.replace(/\[Bài\s+[^\]]+\]\s*/gi, '');
+        return s.trim();
+    }
+
+    function shuffleArrayInPlace(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+        }
+        return arr;
+    }
+
+    function shuffleMultipleChoiceOptions(rawItem) {
+        if (!rawItem) return { q: '', options: ['A', 'B', 'C', 'D'], ans: 'A' };
+        const item = Object.assign({}, rawItem);
+        item.q = stripBracketLessonPrefix(item.q);
+        if (!Array.isArray(item.options) || item.options.length < 4) return item;
+        const mapIdx = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
+        const origAnsIdx = mapIdx[String(item.ans || 'A').trim().toUpperCase()] || 0;
+        const tagged = item.options.slice(0, 4).map(function(txt, idx) {
+            return { text: txt, isCorrect: (idx === origAnsIdx) };
+        });
+        shuffleArrayInPlace(tagged);
+        const letters = ['A', 'B', 'C', 'D'];
+        item.options = tagged.map(function(t) { return t.text; });
+        for (let i = 0; i < tagged.length; i++) {
+            if (tagged[i].isCorrect) { item.ans = letters[i]; break; }
+        }
+        return item;
+    }
+
+    function shuffleTrueFalseItem(rawItem) {
+        if (!rawItem) return { stem: '', items: [] };
+        const item = Object.assign({}, rawItem);
+        item.stem = stripBracketLessonPrefix(item.stem);
+        if (!Array.isArray(item.items)) return item;
+        if (Array.isArray(item._lockedItems)) {
+            item.items = item._lockedItems.map(function(x) { return Object.assign({}, x); });
+            return item;
+        }
+        item.items = shuffleArrayInPlace(item.items.map(function(x) { return Object.assign({}, x); }));
+        return item;
+    }
+
+    // Hình vẽ đồ thị SVG tích hợp sẵn trong App
+    const BUILTIN_SVG = {
+        cubicGraph: function(yCD, yCT, y0) {
+            return '<div class="exam-svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 215 165" width="170" height="130">' +
+                '<line x1="12" y1="102" x2="202" y2="102" stroke="#000" stroke-width="1.3"/><polygon points="206,102 198,98.5 198,105.5" fill="#000"/>' +
+                '<line x1="105" y1="156" x2="105" y2="10" stroke="#000" stroke-width="1.3"/><polygon points="105,6 101.5,14 108.5,14" fill="#000"/>' +
+                '<line x1="75" y1="42" x2="75" y2="102" stroke="#000" stroke-width="1" stroke-dasharray="3 2"/>' +
+                '<line x1="75" y1="42" x2="105" y2="42" stroke="#000" stroke-width="1" stroke-dasharray="3 2"/>' +
+                '<line x1="135" y1="122" x2="135" y2="102" stroke="#000" stroke-width="1" stroke-dasharray="3 2"/>' +
+                '<line x1="135" y1="122" x2="105" y2="122" stroke="#000" stroke-width="1" stroke-dasharray="3 2"/>' +
+                '<path d="M 38 148 C 52 95, 62 42, 75 42 C 90 42, 120 122, 135 122 C 148 122, 158 68, 172 16" fill="none" stroke="#000" stroke-width="1.65"/>' +
+                '<circle cx="75" cy="42" r="2.3" fill="#000"/><circle cx="135" cy="122" r="2.3" fill="#000"/>' +
+                '<text x="93" y="115" font-family="Times New Roman" font-size="12" font-style="italic">O</text>' +
+                '<text x="196" y="116" font-family="Times New Roman" font-size="12.5" font-style="italic">x</text>' +
+                '<text x="92" y="17" font-family="Times New Roman" font-size="12.5" font-style="italic">y</text>' +
+                '<text x="67" y="116" font-family="Times New Roman" font-size="11.5">&minus;1</text>' +
+                '<text x="132" y="98" font-family="Times New Roman" font-size="11.5">1</text>' +
+                '<text x="109" y="46" font-family="Times New Roman" font-size="11.5">' + yCD + '</text>' +
+                '<text x="88" y="126" font-family="Times New Roman" font-size="11.5">' + yCT + '</text>' +
+            '</svg></div>';
+        },
+        parabolaGateArch: function(widthM, heightM) {
+            return '<div class="exam-svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 140" width="185" height="112">' +
+                '<path d="M 35 112 Q 115 -56 195 112 Z" fill="rgba(148,163,184,0.22)" stroke="#000" stroke-width="1.6"/>' +
+                '<line x1="15" y1="112" x2="215" y2="112" stroke="#000" stroke-width="1.4"/>' +
+                '<line x1="115" y1="28" x2="115" y2="112" stroke="#000" stroke-width="1.2" stroke-dasharray="3 2"/>' +
+                '<text x="28" y="126" font-family="Times New Roman" font-size="12.5" font-weight="bold" font-style="italic">A</text>' +
+                '<text x="192" y="126" font-family="Times New Roman" font-size="12.5" font-weight="bold" font-style="italic">B</text>' +
+                '<text x="111" y="21" font-family="Times New Roman" font-size="12.5" font-weight="bold" font-style="italic">I</text>' +
+                '<text x="120" y="74" font-family="Times New Roman" font-size="11.5">h = ' + heightM + ' m</text>' +
+                '<text x="115" y="128" font-family="Times New Roman" font-size="11.5" text-anchor="middle">AB = ' + widthM + ' m</text>' +
+            '</svg></div>';
+        }
+    };
+
+    // Bộ sinh câu hỏi thông minh bám sát từng bài học trong Ma trận
+    function buildSmartLessonQuestion(grade, lessonObj, partKey, levelKey, seed) {
+        const F = window.IMATHS_EXAM_FMT;
+        const a = (seed % 5) + 2;
+        const b = (seed % 7) + 3;
+        const lid = lessonObj.id;
+
+        if (partKey === 'p1') {
+            if (lid === 'g12_c1_b1' || lid === 'g12_c1_b4') {
+                const dVal = (seed % 3) + 1;
+                return {
+                    q: 'Cho hàm số bậc ba ' + F.m('y = f(x)') + ' có đồ thị là đường cong như hình vẽ bên. Hàm số đã cho nghịch biến trên khoảng nào dưới đây?',
+                    svgRight: BUILTIN_SVG.cubicGraph(dVal + 2, dVal - 2, dVal),
+                    options: [ F.m('(&minus;1; 1)'), F.m('(&minus;&infin;; &minus;1)'), F.m('(1; +&infin;)'), F.m('(' + (dVal - 2) + '; ' + (dVal + 2) + ')') ],
+                    ans: 'A', lessonId: lid, level: levelKey
+                };
+            }
+            if (lid === 'g12_c1_b2') {
+                return {
+                    q: 'Giá trị nhỏ nhất của hàm số ' + F.m('f(x) = x<sup>3</sup> &minus; 3x + ' + a) + ' trên đoạn ' + F.m('[0; 2]') + ' bằng:',
+                    options: [ String(a - 2), String(a), String(a + 2), String(a + 4) ],
+                    ans: 'A', lessonId: lid, level: levelKey
+                };
+            }
+            if (lid === 'g12_c1_b3') {
+                return {
+                    q: 'Tiệm cận đứng và tiệm cận ngang của đồ thị hàm số ' + F.m('y = ' + F.frac((a + 1) + 'x &minus; 1', 'x &minus; ' + a)) + ' lần lượt là:',
+                    options: [
+                        F.m('x = ' + a + '; y = ' + (a + 1)),
+                        F.m('x = ' + (a + 1) + '; y = ' + a),
+                        F.m('x = &minus;' + a + '; y = ' + (a + 1)),
+                        F.m('x = ' + a + '; y = &minus;1')
+                    ],
+                    ans: 'A', lessonId: lid, level: levelKey
+                };
+            }
+            if (lid.indexOf('g12_c2') === 0) {
+                return {
+                    q: 'Trong không gian ' + F.m('Oxyz') + ', hình chiếu vuông góc của điểm ' + F.m('M(' + a + '; &minus;' + b + '; 5)') + ' trên mặt phẳng ' + F.m('(Oxy)') + ' có tọa độ là:',
+                    options: [
+                        F.m('(' + a + '; &minus;' + b + '; 0)'),
+                        F.m('(0; 0; 5)'),
+                        F.m('(' + a + '; 0; 5)'),
+                        F.m('(0; &minus;' + b + '; 5)')
+                    ],
+                    ans: 'A', lessonId: lid, level: levelKey
+                };
+            }
+            if (lid.indexOf('g12_c4') === 0) {
+                return {
+                    q: 'Họ tất cả các nguyên hàm của hàm số ' + F.m('f(x) = 3x<sup>2</sup> + ' + (2 * a) + 'x') + ' trên ' + F.m('R') + ' là:',
+                    options: [
+                        F.m('x<sup>3</sup> + ' + a + 'x<sup>2</sup> + C'),
+                        F.m('6x + ' + (2 * a) + ' + C'),
+                        F.m('x<sup>3</sup> + ' + (2 * a) + 'x<sup>2</sup> + C'),
+                        F.m('3x<sup>3</sup> + ' + a + 'x<sup>2</sup> + C')
+                    ],
+                    ans: 'A', lessonId: lid, level: levelKey
+                };
+            }
+            if (lid.indexOf('g12_c5') === 0) {
+                return {
+                    q: 'Trong không gian ' + F.m('Oxyz') + ', mặt phẳng ' + F.m('(P): ' + a + 'x &minus; ' + b + 'y + 3z &minus; 7 = 0') + ' có một vectơ pháp tuyến là:',
+                    options: [
+                        F.m(F.vec('n') + ' = (' + a + '; &minus;' + b + '; 3)'),
+                        F.m(F.vec('n') + ' = (' + a + '; ' + b + '; 3)'),
+                        F.m(F.vec('n') + ' = (' + a + '; &minus;' + b + '; &minus;7)'),
+                        F.m(F.vec('n') + ' = (&minus;' + a + '; &minus;' + b + '; 3)')
+                    ],
+                    ans: 'A', lessonId: lid, level: levelKey
+                };
+            }
+            if (lid === 'g12_c1011_b1') {
+                return {
+                    q: 'Cho cấp số cộng ' + F.m('(u<sub>n</sub>)') + ' có ' + F.m('u<sub>1</sub> = ' + a) + ' và công sai ' + F.m('d = ' + b) + '. Giá trị của ' + F.m('u<sub>5</sub>') + ' bằng:',
+                    options: [ String(a + 4 * b), String(a + 5 * b), String(a + 3 * b), String(a * Math.pow(b, 4)) ],
+                    ans: 'A', lessonId: lid, level: levelKey
+                };
+            }
+            if (lid === 'g12_c1011_b2') {
+                return {
+                    q: 'Nghiệm của phương trình ' + F.m('log<sub>2</sub>(x &minus; ' + a + ') = 3') + ' là:',
+                    options: [ F.m('x = ' + (8 + a)), F.m('x = ' + (6 + a)), F.m('x = ' + (9 + a)), F.m('x = ' + (8 - a)) ],
+                    ans: 'A', lessonId: lid, level: levelKey
+                };
+            }
+            return {
+                q: 'Cho hàm số ' + F.m('f(x) = ' + a + 'x + ' + b) + '. Giá trị của ' + F.m('f(2)') + ' bằng:',
+                options: [ String(2 * a + b), String(a + b), String(2 * a - b), String(a * b) ],
+                ans: 'A', lessonId: lid, level: levelKey
+            };
+        }
+
+        if (partKey === 'p2') {
+            const dVal = (seed % 3) + 1;
+            const exactItems = [
+                { text: 'Hàm số đã cho đồng biến trên các khoảng ' + F.m('(&minus;&infin;; &minus;1)') + ' và ' + F.m('(1; +&infin;)') + '.', isTrue: true },
+                { text: 'Giá trị cực đại của hàm số đã cho bằng ' + F.m('&minus;1') + '.', isTrue: false },
+                { text: 'Đồ thị hàm số cắt trục tung tại điểm có tung độ bằng ' + F.m(String(dVal)) + '.', isTrue: true },
+                { text: 'Phương trình ' + F.m('f(x) = ' + dVal) + ' có đúng 3 nghiệm thực phân biệt.', isTrue: true }
+            ];
+            return {
+                stem: 'Cho hàm số bậc ba ' + F.m('y = f(x) = x<sup>3</sup> &minus; 3x + ' + dVal) + ' có đồ thị như hình vẽ.',
+                svgCenter: BUILTIN_SVG.cubicGraph(dVal + 2, dVal - 2, dVal),
+                items: exactItems,
+                _lockedItems: exactItems,
+                lessonId: lid, level: levelKey
+            };
+        }
+
+        if (partKey === 'p3') {
+            if (lid.indexOf('g12_c4') === 0) {
+                const hGate = (seed % 2 === 0) ? 6 : 9;
+                const cost = (2 / 3) * 6 * hGate * 2;
+                return {
+                    q: 'Một cổng chào có dạng hình Parabol với chiều rộng chân cổng ' + F.m('AB = 6 m') + ' và chiều cao ' + F.m('h = ' + hGate + ' m') + ' (như hình vẽ). Người ta lắp kính cường lực cho toàn bộ mặt cổng với giá 2 triệu đồng/m<sup>2</sup>. Tính tổng số tiền (triệu đồng) cần dùng.',
+                    svgCenter: BUILTIN_SVG.parabolaGateArch(6, hGate),
+                    ans: String(cost),
+                    lessonId: lid, level: levelKey
+                };
+            }
+            const xOpt = 10 * ((seed % 3) + 2);
+            return {
+                q: 'Một doanh nghiệp sản xuất ' + F.m('x') + ' sản phẩm mỗi ngày với tổng chi phí ' + F.m('C(x) = x<sup>2</sup> + 40x + 100') + ' (triệu đồng) và doanh thu ' + F.m('R(x) = ' + (40 + 2 * xOpt) + 'x') + ' (triệu đồng). Tìm lợi nhuận lớn nhất (triệu đồng) trong một ngày.',
+                ans: String(xOpt * xOpt - 100),
+                lessonId: lid, level: levelKey
+            };
+        }
+
+        return {
+            q: '(1,0 điểm) Giải phương trình và tìm giá trị nhỏ nhất của biểu thức ' + F.m('A(x) = x<sup>2</sup> &minus; ' + (2 * a) + 'x + ' + (a * a + b)) + ' trên ' + F.m('R') + '.',
+            ans: String(b),
+            solution: 'Ta có ' + F.m('A(x) = (x &minus; ' + a + ')<sup>2</sup> + ' + b + ' &ge; ' + b) + '. Vậy giá trị nhỏ nhất bằng ' + b + ' khi ' + F.m('x = ' + a) + '.',
+            lessonId: lid, level: levelKey
+        };
+    }
+
+    // ===================================================================
+    // 3. LÕI ĐIỀU KHIỂN CHÍNH (IMES_Engine)
+    // ===================================================================
+    window.IMES_Engine = {
+        currentMode: 'exam',
+        currentSeed: 2026,
+        currentExamData: { p1: [], p2: [], p3: [], p4: [] },
+        isQuizView: false,
+        userQuizAnswers: { p1: {}, p2: {}, p3: {} },
+
+        switchMobilePanel: function(panel) {
+            const colCfg  = document.getElementById('imes-col-config');
+            const colPrv  = document.getElementById('imes-col-preview');
+            const prvBox  = document.getElementById('imes-preview-scroll-box');
+            const quizBox = document.getElementById('imes-student-quiz-box');
+            const heading = document.getElementById('imes-right-panel-heading');
+
+            ['cfg', 'prv', 'quiz'].forEach(function(k) {
+                const btn = document.getElementById('imes-mob-btn-' + k);
+                if (btn) btn.classList.toggle('active', k === panel);
+            });
+
+            if (panel === 'cfg') {
+                colCfg.classList.remove('imes-mob-hidden');
+                colPrv.classList.add('imes-mob-hidden');
+            } else if (panel === 'quiz') {
+                colPrv.classList.remove('imes-mob-hidden');
+                colCfg.classList.add('imes-mob-hidden');
+                this.isQuizView = true;
+                prvBox.style.display = 'none';
+                quizBox.style.display = 'block';
+                if (heading) heading.innerHTML = '✍️ CHẾ ĐỘ HỌC SINH LÀM BÀI & CHẤM ĐIỂM TRỰC TIẾP';
+                this.renderStudentQuizView();
+            } else {
+                colPrv.classList.remove('imes-mob-hidden');
+                colCfg.classList.add('imes-mob-hidden');
+                this.isQuizView = false;
+                quizBox.style.display = 'none';
+                prvBox.style.display = 'flex';
+                if (heading) heading.innerHTML = '📄 XEM TRƯỚC ĐỀ THI (BẤM "🔄 ĐỔI CÂU" TRƯỚC TỪNG CÂU ĐỂ ĐỔI)';
+                this.fitPaperToMobileScreen();
+            }
+        },
+
+        toggleStudentQuizView: function() {
+            if (window.innerWidth <= 920) {
+                this.switchMobilePanel(this.isQuizView ? 'prv' : 'quiz');
+                return;
+            }
+            const prvBox  = document.getElementById('imes-preview-scroll-box');
+            const quizBox = document.getElementById('imes-student-quiz-box');
+            const heading = document.getElementById('imes-right-panel-heading');
+            this.isQuizView = !this.isQuizView;
+            if (this.isQuizView) {
+                prvBox.style.display = 'none';
+                quizBox.style.display = 'block';
+                if (heading) heading.innerHTML = '✍️ CHẾ ĐỘ HỌC SINH LÀM BÀI & CHẤM ĐIỂM TRỰC TIẾP';
+                this.renderStudentQuizView();
+            } else {
+                quizBox.style.display = 'none';
+                prvBox.style.display = 'flex';
+                if (heading) heading.innerHTML = '📄 XEM TRƯỚC ĐỀ THI (BẤM "🔄 ĐỔI CÂU" TRƯỚC TỪNG CÂU ĐỂ ĐỔI)';
+                this.fitPaperToMobileScreen();
+            }
+        },
+
+        fitPaperToMobileScreen: function() {
+            const box   = document.getElementById('imes-preview-scroll-box');
+            const wrap  = document.getElementById('imes-paper-scale-wrap');
+            const paper = document.getElementById('imes-a4-paper');
+            if (!box || !wrap || !paper) return;
+            const availW = box.clientWidth - 16;
+            if (availW > 100 && availW < 794) {
+                const ratio = availW / 794;
+                wrap.style.transform = 'scale(' + ratio.toFixed(4) + ')';
+                wrap.style.height = Math.ceil(paper.offsetHeight * ratio) + 'px';
+            } else {
+                wrap.style.transform = 'none';
+                wrap.style.height = 'auto';
+            }
+        },
+
+        switchMode: function(mode) {
+            this.currentMode = (mode === 'topic') ? 'topic' : 'exam';
+            document.getElementById('imes-tab-exam').classList.toggle('active', this.currentMode === 'exam');
+            document.getElementById('imes-tab-topic').classList.toggle('active', this.currentMode === 'topic');
+            this.generateExam(false);
+        },
+
+        onGradeChange: function() {
+            const g = document.getElementById('imes-grade-select').value;
+            const termSel = document.getElementById('imes-term-select');
+            const optThpt = document.getElementById('imes-opt-thpt');
+            if (optThpt) {
+                optThpt.style.display = (g === '12') ? '' : 'none';
+                optThpt.disabled = (g !== '12');
+                if (g !== '12' && termSel.value === 'thpt') termSel.value = 'gk1';
+            }
+            this.syncExamTitleWithTerm();
+            this.buildExamMatrixTable();
+            this.generateExam(false);
+        },
+
+        onTermChange: function() {
+            this.syncExamTitleWithTerm();
+            this.buildExamMatrixTable();
+            this.generateExam(false);
+        },
+
+        syncExamTitleWithTerm: function() {
+            const g = document.getElementById('imes-grade-select').value;
+            const term = document.getElementById('imes-term-select').value;
+            const mapTitles = {
+                'gk1':  'KIỂM TRA GIỮA HỌC KỲ I NĂM HỌC 2026 - 2027',
+                'hk1':  'KIỂM TRA CUỐI HỌC KỲ I NĂM HỌC 2026 - 2027',
+                'gk2':  'KIỂM TRA GIỮA HỌC KỲ II NĂM HỌC 2026 - 2027',
+                'hk2':  'KIỂM TRA CUỐI HỌC KỲ II NĂM HỌC 2026 - 2027',
+                'thpt': 'KỲ THI TỐT NGHIỆP THPT & ĐẠI HỌC NĂM 2026'
+            };
+            document.getElementById('imes-exam-title').value = mapTitles[term] || mapTitles['gk1'];
+            document.getElementById('imes-matrix-term-badge').textContent = ' (Khối ' + g + ')';
+        },
+
+        getFilteredChaptersForCurrentGradeAndTerm: function() {
+            const g = document.getElementById('imes-grade-select').value;
+            const term = document.getElementById('imes-term-select').value;
+            const allChapters = window.IMATHS_KNTT_CURRICULUM[g] || [];
+            return allChapters.filter(function(ch) {
+                return Array.isArray(ch.terms) && ch.terms.indexOf(term) !== -1;
+            });
+        },
+
+        buildExamMatrixTable: function() {
+            const tbody = document.getElementById('imes-matrix-tbody');
+            const chapters = this.getFilteredChaptersForCurrentGradeAndTerm();
+            let html = '';
+
+            chapters.forEach(function(chap) {
+                const lessons = chap.lessons || [];
+                const rowSpan = lessons.length || 1;
+                const is1011  = (chap.chapterId === 'g12_c1011');
+
+                lessons.forEach(function(les, lIdx) {
+                    html += '<tr class="imes-matrix-row" data-chapter-id="' + chap.chapterId + '" data-lesson-id="' + les.id + '">';
+                    if (lIdx === 0) {
+                        html += '<td class="mat-col-chapter' + (is1011 ? ' is-1011-chapter' : '') + '" rowspan="' + rowSpan + '">' +
+                            '<label style="display:flex;align-items:flex-start;gap:4px;cursor:pointer;">' +
+                                '<input type="checkbox" class="mat-cb-chapter" data-chapter-id="' + chap.chapterId + '" checked onchange="window.IMES_Engine.onToggleMatrixChapter(this)">' +
+                                '<span>' + chap.chapterTitle + '</span>' +
+                            '</label></td>';
+                    }
+                    html += '<td class="mat-col-lesson">' +
+                        '<label style="display:flex;align-items:flex-start;gap:4px;cursor:pointer;">' +
+                            '<input type="checkbox" class="mat-cb-lesson" data-chapter-id="' + chap.chapterId + '" data-lesson-id="' + les.id + '" checked onchange="window.IMES_Engine.onMatrixInputChanged()">' +
+                            '<span>' + les.name + '</span>' +
+                        '</label></td>';
+
+                    ['p1', 'p2', 'p3', 'p4'].forEach(function(pKey) {
+                        ['de', 'tb', 'kho'].forEach(function(lvl) {
+                            html += '<td class="mat-col-num">' +
+                                '<input type="number" min="0" max="20" value="0" class="mat-num-inp" ' +
+                                    'data-lesson-id="' + les.id + '" data-part="' + pKey + '" data-level="' + lvl + '" ' +
+                                    'oninput="window.IMES_Engine.onMatrixInputChanged()">' +
+                            '</td>';
+                        });
+                    });
+                    html += '</tr>';
+                });
+            });
+
+            tbody.innerHTML = html;
+            this.applyStandardMatrixPreset(true);
+        },
+
+        onToggleMatrixChapter: function(chapCb) {
+            const chapId = chapCb.getAttribute('data-chapter-id');
+            document.querySelectorAll('.mat-cb-lesson[data-chapter-id="' + chapId + '"]').forEach(function(lCb) {
+                lCb.checked = chapCb.checked;
+            });
+            this.onMatrixInputChanged();
+        },
+
+        clearMatrixCounts: function() {
+            document.querySelectorAll('input.mat-num-inp').forEach(function(inp) {
+                inp.value = '0'; inp.classList.remove('has-val');
+            });
+            this.updateMatrixTotalsFooter();
+            this.generateExam(false);
+        },
+
+        applyStandardMatrixPreset: function(silent) {
+            const rows = Array.from(document.querySelectorAll('tr.imes-matrix-row')).filter(function(r) {
+                const cb = r.querySelector('.mat-cb-lesson');
+                return !cb || cb.checked;
+            });
+            if (rows.length === 0) return;
+
+            document.querySelectorAll('input.mat-num-inp').forEach(function(inp) {
+                inp.value = '0'; inp.classList.remove('has-val');
+            });
+
+            const term = document.getElementById('imes-term-select').value;
+            const quotas = {
+                p1: { de: 6, tb: 4, kho: 2 },
+                p2: { de: 2, tb: 1, kho: 1 },
+                p3: (term === 'thpt') ? { de: 2, tb: 2, kho: 2 } : { de: 2, tb: 1, kho: 1 },
+                p4: (term === 'thpt') ? { de: 0, tb: 0, kho: 0 } : { de: 1, tb: 1, kho: 0 }
+            };
+
+            ['p1', 'p2', 'p3', 'p4'].forEach(function(pKey) {
+                let rIdx = 0;
+                ['de', 'tb', 'kho'].forEach(function(lvl) {
+                    const cnt = quotas[pKey][lvl] || 0;
+                    for (let i = 0; i < cnt; i++) {
+                        const row = rows[rIdx % rows.length]; rIdx++;
+                        const inp = row.querySelector('input.mat-num-inp[data-part="' + pKey + '"][data-level="' + lvl + '"]');
+                        if (inp) {
+                            inp.value = String(parseInt(inp.value || '0', 10) + 1);
+                            inp.classList.add('has-val');
+                        }
+                    }
+                });
+            });
+
+            this.updateMatrixTotalsFooter();
+            if (!silent) this.generateExam(false);
+        },
+
+        onMatrixInputChanged: function() {
+            document.querySelectorAll('input.mat-num-inp').forEach(function(inp) {
+                const v = Math.max(0, parseInt(inp.value || '0', 10));
+                inp.classList.toggle('has-val', v > 0);
+            });
+            this.updateMatrixTotalsFooter();
+            this.generateExam(false);
+        },
+
+        updateMatrixTotalsFooter: function() {
+            const sums = { p1: {de:0,tb:0,kho:0}, p2: {de:0,tb:0,kho:0}, p3: {de:0,tb:0,kho:0}, p4: {de:0,tb:0,kho:0} };
+            document.querySelectorAll('tr.imes-matrix-row').forEach(function(row) {
+                const cb = row.querySelector('.mat-cb-lesson');
+                if (cb && !cb.checked) return;
+                ['p1', 'p2', 'p3', 'p4'].forEach(function(pKey) {
+                    ['de', 'tb', 'kho'].forEach(function(lvl) {
+                        const inp = row.querySelector('input.mat-num-inp[data-part="' + pKey + '"][data-level="' + lvl + '"]');
+                        sums[pKey][lvl] += inp ? Math.max(0, parseInt(inp.value || '0', 10)) : 0;
+                    });
+                });
+            });
+            const totP1 = sums.p1.de + sums.p1.tb + sums.p1.kho;
+            const totP2 = sums.p2.de + sums.p2.tb + sums.p2.kho;
+            const totP3 = sums.p3.de + sums.p3.tb + sums.p3.kho;
+            const totP4 = sums.p4.de + sums.p4.tb + sums.p4.kho;
+            document.getElementById('imes-matrix-tfoot').innerHTML =
+                '<tr><td colspan="2" style="text-align:right;">TỔNG CỘNG:</td>' +
+                '<td>' + sums.p1.de + '</td><td>' + sums.p1.tb + '</td><td>' + sums.p1.kho + '</td>' +
+                '<td>' + sums.p2.de + '</td><td>' + sums.p2.tb + '</td><td>' + sums.p2.kho + '</td>' +
+                '<td>' + sums.p3.de + '</td><td>' + sums.p3.tb + '</td><td>' + sums.p3.kho + '</td>' +
+                '<td>' + sums.p4.de + '</td><td>' + sums.p4.tb + '</td><td>' + sums.p4.kho + '</td></tr>';
+            document.getElementById('imes-matrix-total-summary').innerHTML =
+                'Tổng: ' + (totP1 + totP2 + totP3 + totP4) + ' câu (P.I: ' + totP1 + ' | P.II: ' + totP2 + ' | P.III: ' + totP3 + ' | P.IV: ' + totP4 + ')';
+        },
+
+        collectQuestionsByMatrix: function(partKey, methodKey, seedBase) {
+            const g = document.getElementById('imes-grade-select').value;
+            const modsGrade = window.IMATHS_EXAM_MODULES[g] || {};
+            const modList = Object.keys(modsGrade).map(function(k) { return modsGrade[k]; });
+            const chapters = this.getFilteredChaptersForCurrentGradeAndTerm();
+            const lessonMap = {};
+            chapters.forEach(function(c) {
+                (c.lessons || []).forEach(function(l) { lessonMap[l.id] = l; });
+            });
+
+            const collected = [];
+            let stepSeed = seedBase;
+
+            document.querySelectorAll('tr.imes-matrix-row').forEach(function(row) {
+                const cb = row.querySelector('.mat-cb-lesson');
+                if (cb && !cb.checked) return;
+                const lessonId = row.getAttribute('data-lesson-id');
+                const chapterId = row.getAttribute('data-chapter-id');
+                const lessonObj = lessonMap[lessonId] || { id: lessonId, name: 'Bài học', keywords: [] };
+
+                ['de', 'tb', 'kho'].forEach(function(lvl) {
+                    const inp = row.querySelector('input.mat-num-inp[data-part="' + partKey + '"][data-level="' + lvl + '"]');
+                    const countNeeded = inp ? Math.max(0, parseInt(inp.value || '0', 10)) : 0;
+                    if (countNeeded <= 0) return;
+
+                    let matchingPool = [];
+                    modList.forEach(function(m, mIdx) {
+                        if (m && typeof m[methodKey] === 'function' && (m.lessonId === lessonId || m.chapterId === chapterId)) {
+                            const arr = m[methodKey](stepSeed + mIdx * 29, lvl);
+                            if (Array.isArray(arr)) {
+                                arr.forEach(function(qItem) {
+                                    matchingPool.push(Object.assign({}, qItem, { lessonId: lessonId, level: lvl }));
+                                });
+                            }
+                        }
+                    });
+
+                    for (let i = 0; i < countNeeded; i++) {
+                        stepSeed += 37;
+                        if (i < matchingPool.length) {
+                            collected.push(matchingPool[i]);
+                        } else {
+                            collected.push(buildSmartLessonQuestion(g, lessonObj, partKey, lvl, stepSeed + i * 19));
+                        }
+                    }
+                });
+            });
+
+            return shuffleArrayInPlace(collected);
+        },
+
+        // Đổi riêng từng câu hỏi ngay tại vị trí "[🔄 Đổi câu] Câu 1..."
+        swapSingleQuestion: function(partKey, qIdx) {
+            const list = this.currentExamData[partKey];
+            if (!Array.isArray(list) || !list[qIdx]) return;
+            const oldItem = list[qIdx];
+            const lessonId = oldItem.lessonId || 'g12_c1_b1';
+            const levelKey = oldItem.level || 'tb';
+            const g = document.getElementById('imes-grade-select').value;
+            this.currentSeed += Math.floor(Math.random() * 79) + 17;
+
+            let newQ = buildSmartLessonQuestion(g, { id: lessonId, name: '' }, partKey, levelKey, this.currentSeed);
+            if (partKey === 'p1') newQ = shuffleMultipleChoiceOptions(newQ);
+            else if (partKey === 'p2') newQ = shuffleTrueFalseItem(newQ);
+            else newQ.q = stripBracketLessonPrefix(newQ.q);
+
+            this.currentExamData[partKey][qIdx] = newQ;
+            this.renderPaper();
+            if (this.isQuizView) this.renderStudentQuizView();
+        },
+
+        generateExam: function(switchOnMobile) {
+            this.currentSeed += Math.floor(Math.random() * 50) + 11;
+            const rawP1 = this.collectQuestionsByMatrix('p1', 'genPart1', this.currentSeed + 11);
+            const rawP2 = this.collectQuestionsByMatrix('p2', 'genPart2', this.currentSeed + 23);
+            const rawP3 = this.collectQuestionsByMatrix('p3', 'genPart3', this.currentSeed + 37);
+            const rawP4 = this.collectQuestionsByMatrix('p4', 'genPart4', this.currentSeed + 53);
+
+            this.currentExamData = {
+                p1: rawP1.map(shuffleMultipleChoiceOptions),
+                p2: rawP2.map(shuffleTrueFalseItem),
+                p3: rawP3,
+                p4: rawP4
+            };
+            this.userQuizAnswers = { p1: {}, p2: {}, p3: {} };
+            this.renderPaper();
+            if (this.isQuizView) this.renderStudentQuizView();
+            if (switchOnMobile && window.innerWidth <= 920) {
+                this.switchMobilePanel(this.isQuizView ? 'quiz' : 'prv');
+            }
+        },
+
+        shuffleCurrentExam: function(switchOnMobile) {
+            document.getElementById('imes-exam-code').value = '0' + (Math.floor(Math.random() * 899) + 101);
+            const d = this.currentExamData;
+            d.p1 = shuffleArrayInPlace(d.p1.map(shuffleMultipleChoiceOptions));
+            d.p2 = shuffleArrayInPlace(d.p2.map(shuffleTrueFalseItem));
+            d.p3 = shuffleArrayInPlace(d.p3.slice());
+            d.p4 = shuffleArrayInPlace(d.p4.slice());
+            this.userQuizAnswers = { p1: {}, p2: {}, p3: {} };
+            this.renderPaper();
+            if (this.isQuizView) this.renderStudentQuizView();
+            if (switchOnMobile && window.innerWidth <= 920) {
+                this.switchMobilePanel(this.isQuizView ? 'quiz' : 'prv');
+            }
+        },
+
+        buildSwapButtonHtml: function(partKey, idx) {
+            return '<button type="button" class="imes-q-swap-btn" onclick="window.IMES_Engine.swapSingleQuestion(\'' + partKey + '\',' + idx + ')">🔄 Đổi câu</button>';
+        },
+
+        renderMCBlockHtml: function(item, qNum, partKey, itemIdx) {
+            const cleanQ  = stripBracketLessonPrefix(item.q);
+            const swapBtn = this.buildSwapButtonHtml(partKey, itemIdx);
+            const opts    = item.options || ['A', 'B', 'C', 'D'];
+            const optsTableHtml = '<table class="exam-mc-table">' +
+                '<tr><td style="width:50%;"><b>A.</b> ' + opts[0] + '</td><td style="width:50%;"><b>B.</b> ' + opts[1] + '</td></tr>' +
+                '<tr><td style="width:50%;"><b>C.</b> ' + opts[2] + '</td><td style="width:50%;"><b>D.</b> ' + opts[3] + '</td></tr>' +
+            '</table>';
+
+            if (item.svgRight) {
+                return '<div class="exam-question-block"><table class="exam-split-table"><tr>' +
+                    '<td class="exam-split-left"><div class="exam-q-stem">' + swapBtn + '<b>Câu ' + qNum + '.</b> ' + cleanQ + '</div>' + optsTableHtml + '</td>' +
+                    '<td class="exam-split-right">' + item.svgRight + '</td>' +
+                '</tr></table></div>';
+            }
+            return '<div class="exam-question-block"><div class="exam-q-stem">' + swapBtn + '<b>Câu ' + qNum + '.</b> ' + cleanQ + '</div>' + (item.svgCenter || '') + optsTableHtml + '</div>';
+        },
+
+        renderTFBlockHtml: function(item, qNum, partKey, itemIdx) {
+            const cleanStem = stripBracketLessonPrefix(item.stem);
+            const swapBtn   = this.buildSwapButtonHtml(partKey, itemIdx);
+            const subLabels = ['a)', 'b)', 'c)', 'd)'];
+            const stmtsHtml = (item.items || []).map(function(st, sIdx) {
+                return '<div><b>' + subLabels[sIdx] + '</b> ' + st.text + '</div>';
+            }).join('');
+            return '<div class="exam-question-block"><div class="exam-q-stem">' + swapBtn + '<b>Câu ' + qNum + '.</b> ' + cleanStem + '</div>' + (item.svgCenter || '') + '<div class="exam-tf-list">' + stmtsHtml + '</div></div>';
+        },
+
+        renderShortOrEssayBlockHtml: function(item, qNum, partKey, itemIdx) {
+            const cleanQ  = stripBracketLessonPrefix(item.q);
+            const swapBtn = this.buildSwapButtonHtml(partKey, itemIdx);
+            return '<div class="exam-question-block"><div class="exam-q-stem">' + swapBtn + '<b>Câu ' + qNum + '.</b> ' + cleanQ + '</div>' + (item.svgCenter || '') + '</div>';
+        },
+
+        renderPaper: function() {
+            const paper     = document.getElementById('imes-a4-paper');
+            const orgName   = document.getElementById('imes-org-name').value;
+            const examTitle = document.getElementById('imes-exam-title').value;
+            const duration  = document.getElementById('imes-duration').value;
+            const examCode  = document.getElementById('imes-exam-code').value;
+            const gradeVal  = document.getElementById('imes-grade-select').value;
+            const showAns   = (document.getElementById('imes-ans-mode').value === 'show');
+            const d         = this.currentExamData;
+            const totalQ    = d.p1.length + d.p2.length + d.p3.length + d.p4.length;
+
+            document.getElementById('imes-stat-badge').innerHTML = 'Khối ' + gradeVal + ' • ' + totalQ + ' câu';
+
+            let html = '<table class="exam-header-table"><tr>' +
+                '<td style="width:42%;"><div>' + orgName + '</div><div style="font-weight:bold;">ĐỀ THI CHÍNH THỨC</div><div style="border-top:1px solid #000;width:100px;margin:2px auto;"></div></td>' +
+                '<td style="width:58%;"><div style="font-weight:bold;">' + examTitle + '</div><div style="font-weight:bold;">Môn: TOÁN - Khối ' + gradeVal + '</div><div>Thời gian làm bài: ' + duration + ' phút</div><div class="exam-code-box">Mã đề: ' + examCode + '</div></td>' +
+            '</tr></table>' +
+            '<div style="margin:6px 0 10px 0;"><b>Họ, tên thí sinh:</b> .................................................................. <b>Lớp / SBD:</b> ........................</div>';
+
+            const self = this;
+            if (d.p1.length > 0) {
+                html += '<div class="exam-section-heading">PHẦN I. Thí sinh trả lời từ câu 1 đến câu ' + d.p1.length + '. Mỗi câu hỏi thí sinh chỉ chọn một phương án.</div>';
+                d.p1.forEach(function(it, idx) { html += self.renderMCBlockHtml(it, idx + 1, 'p1', idx); });
+            }
+            if (d.p2.length > 0) {
+                html += '<div class="exam-section-heading">PHẦN II. Thí sinh trả lời từ câu 1 đến câu ' + d.p2.length + '. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai.</div>';
+                d.p2.forEach(function(it, idx) { html += self.renderTFBlockHtml(it, idx + 1, 'p2', idx); });
+            }
+            if (d.p3.length > 0) {
+                html += '<div class="exam-section-heading">PHẦN III. Thí sinh trả lời từ câu 1 đến câu ' + d.p3.length + ' (Trả lời ngắn).</div>';
+                d.p3.forEach(function(it, idx) { html += self.renderShortOrEssayBlockHtml(it, idx + 1, 'p3', idx); });
+            }
+            if (d.p4.length > 0) {
+                html += '<div class="exam-section-heading">PHẦN IV. Thí sinh trình bày lời giải tự luận từ câu 1 đến câu ' + d.p4.length + '.</div>';
+                d.p4.forEach(function(it, idx) { html += self.renderShortOrEssayBlockHtml(it, idx + 1, 'p4', idx); });
+            }
+
+            html += '<div style="text-align:center;font-weight:bold;margin:14px 0;">---------------- HẾT ----------------</div>';
+
+            if (showAns && totalQ > 0) {
+                html += '<div style="margin-top:18px;padding-top:12px;border-top:1.5px dashed #000;">' +
+                    '<div style="text-align:center;font-weight:bold;font-size:13pt;margin-bottom:8px;">BẢNG ĐÁP ÁN (MÃ ĐỀ: ' + examCode + ')</div>';
+                if (d.p1.length > 0) {
+                    html += '<table class="exam-answer-table"><tr>' + d.p1.map(function(_, i){ return '<th>Câu ' + (i+1) + '</th>'; }).join('') + '</tr><tr>' +
+                        d.p1.map(function(it){ return '<td><b>' + (it.ans || 'A') + '</b></td>'; }).join('') + '</tr></table>';
+                }
+                if (d.p2.length > 0) {
+                    html += '<table class="exam-answer-table"><tr><th>Câu</th><th>Ý a)</th><th>Ý b)</th><th>Ý c)</th><th>Ý d)</th></tr>';
+                    d.p2.forEach(function(it, i) {
+                        const st = it.items || [];
+                        html += '<tr><td><b>Câu ' + (i+1) + '</b></td>' +
+                            '<td>' + (st[0] && st[0].isTrue ? 'Đúng' : 'Sai') + '</td>' +
+                            '<td>' + (st[1] && st[1].isTrue ? 'Đúng' : 'Sai') + '</td>' +
+                            '<td>' + (st[2] && st[2].isTrue ? 'Đúng' : 'Sai') + '</td>' +
+                            '<td>' + (st[3] && st[3].isTrue ? 'Đúng' : 'Sai') + '</td></tr>';
+                    });
+                    html += '</table>';
+                }
+                if (d.p3.length > 0) {
+                    html += '<table class="exam-answer-table"><tr>' + d.p3.map(function(_, i){ return '<th>Câu ' + (i+1) + '</th>'; }).join('') + '</tr><tr>' +
+                        d.p3.map(function(it){ return '<td><b>' + (it.ans || '') + '</b></td>'; }).join('') + '</tr></table>';
+                }
+                html += '</div>';
+            }
+
+            paper.innerHTML = html;
+            setTimeout(function() { window.IMES_Engine.fitPaperToMobileScreen(); }, 50);
+        },
+
+        // ===================================================================
+        // 4. CHẾ ĐỘ HỌC SINH LÀM BÀI & CHẤM ĐIỂM TRỰC TIẾP TRÊN ĐIỆN THOẠI
+        // ===================================================================
+        renderStudentQuizView: function() {
+            const box = document.getElementById('imes-quiz-questions-container');
+            const banner = document.getElementById('imes-quiz-score-banner');
+            if (!box) return;
+            if (banner) banner.style.display = 'none';
+
+            const d = this.currentExamData;
+            let html = '';
+
+            if (d.p1.length > 0) {
+                html += '<div style="font-weight:900;color:#fde047;margin:8px 0;">PHẦN I. TRẮC NGHIỆM (0,25 điểm / câu)</div>';
+                const letters = ['A', 'B', 'C', 'D'];
+                d.p1.forEach(function(item, qIdx) {
+                    const opts = item.options || ['A', 'B', 'C', 'D'];
+                    html += '<div class="quiz-card" id="quiz-card-p1-' + qIdx + '">' +
+                        '<div><b>Câu ' + (qIdx + 1) + '.</b> ' + item.q + '</div>' +
+                        (item.svgRight || item.svgCenter || '') +
+                        '<div class="quiz-mc-grid">' +
+                            opts.map(function(optTxt, oIdx) {
+                                const letChar = letters[oIdx];
+                                return '<div class="quiz-mc-opt" id="quiz-p1-' + qIdx + '-' + letChar + '" onclick="window.IMES_Engine.selectQuizMC(' + qIdx + ',\'' + letChar + '\')">' +
+                                    '<b>' + letChar + '.</b> <span>' + optTxt + '</span>' +
+                                '</div>';
+                            }).join('') +
+                        '</div>' +
+                    '</div>';
+                });
+            }
+
+            if (d.p2.length > 0) {
+                html += '<div style="font-weight:900;color:#fde047;margin:12px 0 8px 0;">PHẦN II. ĐÚNG - SAI (Tối đa 1,0 điểm / câu)</div>';
+                const subLabels = ['a)', 'b)', 'c)', 'd)'];
+                d.p2.forEach(function(item, qIdx) {
+                    html += '<div class="quiz-card" id="quiz-card-p2-' + qIdx + '">' +
+                        '<div><b>Câu ' + (qIdx + 1) + '.</b> ' + item.stem + '</div>' +
+                        (item.svgCenter || '') +
+                        '<div style="margin-top:8px;">' +
+                            (item.items || []).map(function(st, sIdx) {
+                                return '<div class="quiz-tf-row">' +
+                                    '<div><b>' + subLabels[sIdx] + '</b> ' + st.text + '</div>' +
+                                    '<div class="quiz-tf-btns">' +
+                                        '<button type="button" class="quiz-tf-btn" id="quiz-p2-' + qIdx + '-' + sIdx + '-T" onclick="window.IMES_Engine.selectQuizTF(' + qIdx + ',' + sIdx + ',true)">Đúng</button>' +
+                                        '<button type="button" class="quiz-tf-btn" id="quiz-p2-' + qIdx + '-' + sIdx + '-F" onclick="window.IMES_Engine.selectQuizTF(' + qIdx + ',' + sIdx + ',false)">Sai</button>' +
+                                    '</div>' +
+                                '</div>';
+                            }).join('') +
+                        '</div>' +
+                    '</div>';
+                });
+            }
+
+            if (d.p3.length > 0) {
+                html += '<div style="font-weight:900;color:#fde047;margin:12px 0 8px 0;">PHẦN III. TRẢ LỜI NGẮN (0,5 điểm / câu)</div>';
+                d.p3.forEach(function(item, qIdx) {
+                    html += '<div class="quiz-card" id="quiz-card-p3-' + qIdx + '">' +
+                        '<div><b>Câu ' + (qIdx + 1) + '.</b> ' + item.q + '</div>' +
+                        (item.svgCenter || item.svgRight || '') +
+                        '<div style="margin-top:8px;display:flex;align-items:center;gap:8px;">' +
+                            '<input type="text" id="quiz-inp-p3-' + qIdx + '" placeholder="Nhập đáp số (VD: 24 hoặc -1,7)..." style="flex:1;padding:8px 10px;border:1.5px solid #64748b;border-radius:7px;font-size:13pt;font-weight:bold;">' +
+                            '<span id="quiz-res-p3-' + qIdx + '" style="font-family:sans-serif;font-size:12px;font-weight:800;"></span>' +
+                        '</div>' +
+                    '</div>';
+                });
+            }
+
+            box.innerHTML = html;
+        },
+
+        selectQuizMC: function(qIdx, letChar) {
+            this.userQuizAnswers.p1[qIdx] = letChar;
+            ['A', 'B', 'C', 'D'].forEach(function(l) {
+                const el = document.getElementById('quiz-p1-' + qIdx + '-' + l);
+                if (el) el.classList.toggle('selected', l === letChar);
+            });
+        },
+
+        selectQuizTF: function(qIdx, sIdx, val) {
+            if (!this.userQuizAnswers.p2[qIdx]) this.userQuizAnswers.p2[qIdx] = {};
+            this.userQuizAnswers.p2[qIdx][sIdx] = val;
+            const btnT = document.getElementById('quiz-p2-' + qIdx + '-' + sIdx + '-T');
+            const btnF = document.getElementById('quiz-p2-' + qIdx + '-' + sIdx + '-F');
+            if (btnT) btnT.classList.toggle('active-true', val === true);
+            if (btnF) btnF.classList.toggle('active-false', val === false);
+        },
+
+        gradeStudentQuiz: function() {
+            const d = this.currentExamData;
+            let totalScore = 0;
+            let correctP1 = 0;
+
+            // Chấm Phần I (0.25đ / câu)
+            d.p1.forEach(function(item, qIdx) {
+                const userAns = window.IMES_Engine.userQuizAnswers.p1[qIdx];
+                const trueAns = String(item.ans || 'A').trim().toUpperCase();
+                ['A', 'B', 'C', 'D'].forEach(function(l) {
+                    const el = document.getElementById('quiz-p1-' + qIdx + '-' + l);
+                    if (!el) return;
+                    el.classList.remove('correct-ans', 'wrong-ans');
+                    if (l === trueAns) el.classList.add('correct-ans');
+                    else if (l === userAns && userAns !== trueAns) el.classList.add('wrong-ans');
+                });
+                if (userAns === trueAns) {
+                    correctP1++;
+                    totalScore += 0.25;
+                }
+            });
+
+            // Chấm Phần II theo thang điểm chuẩn Bộ GD&ĐT (1 ý đúng: 0.1đ; 2 ý: 0.25đ; 3 ý: 0.5đ; 4 ý: 1.0đ)
+            const tfScale = [0, 0.1, 0.25, 0.5, 1.0];
+            d.p2.forEach(function(item, qIdx) {
+                const uMap = window.IMES_Engine.userQuizAnswers.p2[qIdx] || {};
+                let matchCnt = 0;
+                (item.items || []).forEach(function(st, sIdx) {
+                    if (uMap[sIdx] === st.isTrue) matchCnt++;
+                });
+                totalScore += tfScale[matchCnt] || 0;
+            });
+
+            // Chấm Phần III (0.5đ / câu)
+            let correctP3 = 0;
+            d.p3.forEach(function(item, qIdx) {
+                const inp = document.getElementById('quiz-inp-p3-' + qIdx);
+                const resSpan = document.getElementById('quiz-res-p3-' + qIdx);
+                const uVal = inp ? inp.value.trim().replace(',', '.') : '';
+                const tVal = String(item.ans || '').trim().replace(',', '.');
+                const isOk = (uVal !== '' && (uVal === tVal || Math.abs(parseFloat(uVal) - parseFloat(tVal)) < 0.02));
+                if (isOk) {
+                    correctP3++;
+                    totalScore += 0.5;
+                    if (resSpan) { resSpan.style.color = '#16a34a'; resSpan.textContent = '✔ Đúng (' + item.ans + ')'; }
+                } else {
+                    if (resSpan) { resSpan.style.color = '#dc2626'; resSpan.textContent = '✘ Đáp án: ' + item.ans; }
+                }
+            });
+
+            const banner = document.getElementById('imes-quiz-score-banner');
+            if (banner) {
+                banner.style.display = 'block';
+                banner.innerHTML =
+                    '<div style="font-size:18px;font-weight:900;color:#4ade80;">🏆 ĐIỂM SỐ CỦA BẠN: ' + totalScore.toFixed(2) + ' ĐIỂM</div>' +
+                    '<div style="font-size:12.5px;color:#e2e8f0;margin-top:4px;">' +
+                        'Phần I đúng: <b>' + correctP1 + '/' + d.p1.length + '</b> câu • Phần III đúng: <b>' + correctP3 + '/' + d.p3.length + '</b> câu' +
+                    '</div>';
+                banner.scrollIntoView({ behavior: 'smooth' });
+            }
+        },
+
+        // ===================================================================
+        // 5. XUẤT FILE PDF, WORD (.DOC) VÀ LATEX (.TEX) TRỰC TIẾP TRÊN ĐIỆN THOẠI
+        // ===================================================================
+        exportToPDF: function() {
+            const paper = document.getElementById('imes-a4-paper');
+            const btn   = document.getElementById('imes-btn-export-pdf');
+            if (!paper || typeof window.html2canvas !== 'function') return;
+            const origTxt = btn.innerHTML;
+            btn.disabled = true; btn.innerHTML = '⏳ ĐANG TẠO...';
+
+            const clone = paper.cloneNode(true);
+            clone.querySelectorAll('.imes-q-swap-btn').forEach(function(b) { b.remove(); });
+            clone.style.position = 'fixed'; clone.style.top = '0'; clone.style.left = '0'; clone.style.zIndex = '-999';
+            document.body.appendChild(clone);
+
+            window.html2canvas(clone, { scale: 1.7, useCORS: true, backgroundColor: '#ffffff' }).then(function(canvas) {
+                document.body.removeChild(clone);
+                const jsPDF = window.jspdf.jsPDF;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgData = canvas.toDataURL('image/jpeg', 0.92);
+                const pdfW = 210;
+                const pdfH = (canvas.height * pdfW) / canvas.width;
+                pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, Math.min(297, pdfH));
+                pdf.save('De_Thi_Toan_iMaths_2026.pdf');
+                btn.disabled = false; btn.innerHTML = origTxt;
+            }).catch(function() {
+                if (clone.parentNode) document.body.removeChild(clone);
+                btn.disabled = false; btn.innerHTML = origTxt;
+            });
+        },
+
+        exportToWord: function() {
+            const paper = document.getElementById('imes-a4-paper');
+            if (!paper) return;
+            const clone = paper.cloneNode(true);
+            clone.querySelectorAll('.imes-q-swap-btn').forEach(function(b) { b.remove(); });
+            const htmlDoc = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">' +
+                '<head><meta charset="utf-8"><title>Đề Thi Toán</title><style>body{font-family:"Times New Roman",serif;font-size:12.5pt;}</style></head>' +
+                '<body>' + clone.innerHTML + '</body></html>';
+            const blob = new Blob([htmlDoc], { type: 'application/msword;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'De_Thi_Toan_iMaths_2026.doc';
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        },
+
+        exportToLaTeX: function() {
+            const d = this.currentExamData;
+            const examTitle = document.getElementById('imes-exam-title').value;
+            const examCode  = document.getElementById('imes-exam-code').value;
+            let tex = '\\documentclass[12pt,a4paper]{article}\n\\usepackage[utf8]{vietnam}\n\\usepackage{amsmath,amssymb,geometry,multicol,tikz}\n' +
+                '\\geometry{top=1.8cm,bottom=1.8cm,left=2cm,right=1.5cm}\n\\begin{document}\n' +
+                '\\begin{center}\\textbf{' + examTitle + ' -- Mã đề: ' + examCode + '}\\end{center}\n\n';
+            d.p1.forEach(function(it, i) {
+                const clean = (it.q || '').replace(/<[^>]+>/g, '');
+                tex += '\\noindent\\textbf{Câu ' + (i+1) + '.} ' + clean + '\\\\\n';
+            });
+            tex += '\\end{document}\n';
+            const blob = new Blob([tex], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'De_Thi_Toan_iMaths_2026.tex';
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        }
+    };
+
+    // ===================================================================
+    // 6. TỰ ĐỘNG ĐỒNG BỘ NGẦM TỪ NHOMTOAN.COM KHI ĐIỆN THOẠI CÓ MẠNG
+    // ===================================================================
+    function syncCloudModulesFromServer() {
+        try {
+            const cached = localStorage.getItem('IMATHS_CLOUD_MODULES_CACHE_V1');
+            if (cached && cached.length > 20) {
+                (new Function(cached))();
+            }
+        } catch (e) {}
+
+        if (navigator.onLine) {
+            window.IMATHS_CLOUD_SYNC_CLIENT = {
+                onReceiveCloudPayload: function(payload) {
+                    if (payload && payload.code) {
+                        try {
+                            (new Function(payload.code))();
+                            localStorage.setItem('IMATHS_CLOUD_MODULES_CACHE_V1', payload.code);
+                            window.IMES_Engine.generateExam(false);
+                        } catch (e) {}
+                    }
+                }
+            };
+            const s = document.createElement('script');
+            s.src = 'https://nhomtoan.com/imaths-studio/?imaths_cloud_sync_js=1&t=' + Date.now();
+            s.async = true;
+            document.body.appendChild(s);
+        }
+    }
+
+    window.addEventListener('resize', function() {
+        window.IMES_Engine.fitPaperToMobileScreen();
+    });
+
+    setTimeout(function() {
+        window.IMES_Engine.syncExamTitleWithTerm();
+        window.IMES_Engine.buildExamMatrixTable();
+        window.IMES_Engine.generateExam(false);
+        syncCloudModulesFromServer();
+    }, 200);
+})();
+</script>
+</body>
+</html>
